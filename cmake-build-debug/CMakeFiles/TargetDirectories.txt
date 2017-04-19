@@ -1,3 +1,0 @@
-C:/repositories/tkom/html-cleaner/cmake-build-debug/CMakeFiles/html_cleaner.dir
-C:/repositories/tkom/html-cleaner/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/repositories/tkom/html-cleaner/cmake-build-debug/CMakeFiles/rebuild_cache.dir
