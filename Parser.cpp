@@ -2,121 +2,89 @@
 #include "Parser.h"
 #include "util.h"
 
-Parser::Parser(Lexer *lexer) : lexer(lexer), root(nullptr), level(1), currentToken(Token(Undefined, "", Position())) {}
+Parser::Parser(Lexer *lexer) : lexer(lexer), level(1) {}
 
-Attribute Parser::parseAttribute() {
-    Attribute attribute("", "");
-
-    if (currentToken.getType() == Name) {
-        attribute.key = currentToken.getValue();
-        currentToken = lexer->getNextToken();
-        if (currentToken.getType() == Equals) {
-            currentToken = lexer->getNextToken();
-            if (currentToken.getType() == Value) {
-                attribute.value = currentToken.getValue();
-                currentToken = lexer->getNextToken();
-            }
-            else {
-                std::cout << "Error";
-            }
-        }
-    }
-
-    return attribute;
+HtmlDocument Parser::parse() {
+    auto doctype = parseDoctype();
+    auto rootComments = parseRootComments();
+    auto rootNode = parseElement();
+    return HtmlDocument(doctype, rootComments, rootNode);
 }
 
-Node *Parser::parseElementEnd(std::vector<Attribute> attributes, std::vector<Node *> children) {
-    expect(OpenEnd);
+Node* Parser::parseDoctype() {
     currentToken = lexer->getNextToken();
-    expect(Name);
+    expect(OpenDoctype);
     std::string name = currentToken.getValue();
-    if (name == tagNamesStack.top()) {
+    currentToken = lexer->getNextToken();
+    expect(Close);
+    return new Node(name, SingleTagNode, {}, {}, level);
+}
+
+std::vector<Node*> Parser::parseRootComments() {
+    std::vector<Node*> rootComments;
+    currentToken = lexer->getNextToken();
+    while (currentToken.getType() == Comment) {
+        auto commentNode = new Node(currentToken.getValue(), CommentNode, {}, {}, 1);
+        rootComments.push_back(commentNode);
         currentToken = lexer->getNextToken();
-        expect(Close);
-        tagNamesStack.pop();
-        return new Node(name, DoubleTagNode, std::vector<Node*>(), children, attributes, level);
     }
-    std::cout << "Error: " << "No closing tag for " << tagNamesStack.top();
-    return nullptr;
+    return rootComments;
 }
 
-void Parser::expect(TokenType expectedTokenType) {
-    if (currentToken.getType() != expectedTokenType) {
-        std::cout << "Error! Expected " << expectedTokenType;
-    }
-}
-
-Node *Parser::parseContent() {
-    Token token = lexer->getText();
-    if (token.getType() == Text) {
-        return new Node(token.getValue(), TextNode, std::vector<Node*>(), std::vector<Node*>(), std::vector<Attribute>(), level);
-    }
-    if (token.getType() == Empty) {
-        currentToken = lexer->getNextToken();
-    } else {
-        std::cout << "Error! Invalid token - expected Text or Empty";
-    }
-    if (currentToken.getType() == Comment) {
-        return new Node(currentToken.getValue(), CommentNode, std::vector<Node*>(), std::vector<Node*>(), std::vector<Attribute>(), level);
-    } else {
-        return parseElement();
-    }
-}
-
-Node *Parser::parseElement() {
+Node* Parser::parseElement() {
     std::vector<Node*> children;
-    auto opener = parseOpener();
-    if (opener.first == "") {
+    auto tagOpener = parseTagOpener();
+
+    if (tagOpener.name == "") {
         return nullptr;
     }
+
     if(currentToken.getType() == CloseEmpty) {
-        return new Node(opener.first, EmptyTagNode, std::vector<Node*>(), std::vector<Node*>(), opener.second, level);
+        return new Node(tagOpener.name, InlineTagNode, {}, tagOpener.attributes, level);
     }
-    tagNamesStack.push(opener.first);
-    if (currentToken.getType() == Close) {
-        if (isSingleTag(opener.first)) {
-            tagNamesStack.pop();
-            return new Node(opener.first, SingleTagNode, std::vector<Node*>(), std::vector<Node*>(), opener.second, level);
-        }
-        if (compareCaseInsensitive(toLowerCase(opener.first), "script")) {
-            ++level;
-            std::string script = getScript();
-            children.push_back(new Node(script, TextNode, std::vector<Node*>(), std::vector<Node*>(), std::vector<Attribute>(), level));
-            --level;
-            tagNamesStack.pop();
-            return new Node(opener.first, DoubleTagNode, std::vector<Node*>(), children, opener.second, level);
-        }
-        if (compareCaseInsensitive(toLowerCase(opener.first), "style")) {
-            ++level;
-            children.push_back(new Node(getStyle(), TextNode, std::vector<Node*>(), std::vector<Node*>(), std::vector<Attribute>(), level));
-            --level;
+
+    if (currentToken.getType() != Close) {
+        std::cout << "Error! Close or CloseEmpty was expected but found "
+                  << getTokenTypeName(currentToken.getType()) << std::endl;
+        return nullptr;
+    }
+
+    if (isSingleTag(tagOpener.name)) {
+        return new Node(tagOpener.name, SingleTagNode, {}, tagOpener.attributes, level);
+    }
+
+    if (compareCaseInsensitive(toLowerCase(tagOpener.name), "script")) {
+        std::string script = getScript();
+        children.push_back(new Node(script, TextNode, {}, {}, level + 1));
+        return new Node(tagOpener.name, DoubleTagNode, children, tagOpener.attributes, level);
+    }
+
+    tagNamesStack.push(tagOpener.name);
+
+    while (true) {
+        level++;
+        Node* node = parseContent();
+        level--;
+        if (node != nullptr) {
+            children.push_back(node);
         } else {
-            while (true) {
-                ++level;
-                Node* localNode = parseContent();
-                --level;
-                if (localNode != nullptr) {
-                    children.push_back(localNode);
-                } else {
-                    break;
-                }
-            }
+            break;
         }
-        return parseElementEnd(opener.second, children);
     }
-    std::cout << "Error! Close or CloseEmpty was expected";
+
+    return parseElementEnd(tagOpener.attributes, children);
 }
 
-std::pair<std::string, std::vector<Attribute>> Parser::parseOpener() {
-    std::string name = "";
-    std::vector<Attribute> attributes;
-    auto opener = std::pair<std::string, std::vector<Attribute>>(name, attributes);
+TagOpener Parser::parseTagOpener() {
+    TagOpener tagOpener("", {});
+
     if (currentToken.getType() != Open) {
-        return opener;
+        return tagOpener;
     }
+
     currentToken = lexer->getNextToken();
     expect(Name);
-    name = currentToken.getValue();
+    tagOpener.name = currentToken.getValue();
     currentToken = lexer->getNextToken();
 
     while (true) {
@@ -124,102 +92,78 @@ std::pair<std::string, std::vector<Attribute>> Parser::parseOpener() {
         if (attribute.key == "") {
             break;
         }
-        attributes.push_back(attribute);
+        tagOpener.attributes.push_back(attribute);
     }
-    opener.first = name;
-    opener.second = attributes;
+    return tagOpener;
 }
 
-Node *Parser::parseDoctype() {
-    expect(OpenDoctype);
+Attribute Parser::parseAttribute() {
+    Attribute attribute("", "");
+
+    if (currentToken.getType() != Name) {
+        return attribute;
+    }
+
+    attribute.key = currentToken.getValue();
+    currentToken = lexer->getNextToken();
+    if (currentToken.getType() != Equals) {
+        return attribute;
+    }
+
+    currentToken = lexer->getNextToken();
+    expect(Value);
+    if (currentToken.getType() == Value) {
+        attribute.value = currentToken.getValue();
+        currentToken = lexer->getNextToken();
+    }
+
+    return attribute;
+}
+
+Node *Parser::parseContent() {
+    Token token = lexer->getText();
+    if (token.getType() == Text) {
+        return new Node(token.getValue(), TextNode, {}, {}, level);
+    }
+
+    if (token.getType() == Empty) {
+        currentToken = lexer->getNextToken();
+    } else {
+        std::cout << "Error! Expected Text or Empty but found "
+                  << getTokenTypeName(token.getType()) << std::endl;
+    }
+
+    if (currentToken.getType() == Comment) {
+        return new Node(currentToken.getValue(), CommentNode, {}, {}, level);
+    } else {
+        return parseElement();
+    }
+}
+
+Node *Parser::parseElementEnd(std::vector<Attribute> attributes, std::vector<Node *> children) {
+    expect(OpenEnd);
+    currentToken = lexer->getNextToken();
+    expect(Name);
     std::string name = currentToken.getValue();
+    if (name != tagNamesStack.top()) {
+        std::cout << "Error: No closing tag for " << tagNamesStack.top()
+                  << ", found " << name << " instead." << std::endl;
+        return nullptr;
+    }
     currentToken = lexer->getNextToken();
     expect(Close);
-    return new Node(name, SingleTagNode, std::vector<Node*>(), std::vector<Node*>(), std::vector<Attribute>(), level);
+    tagNamesStack.pop();
+    return new Node(name, DoubleTagNode, children, attributes, level);
 }
 
-const std::string &Parser::getScript() {
-    expectCloseScript();
-    return currentToken.getValue();
-}
-
-const std::string &Parser::getStyle() {
-    currentToken = lexer->getText();
-    auto temp = currentToken.getValue();
-    lexer->getNextToken();
-    return temp;
-}
-
-std::string Parser::expectCloseScript() {
+std::string Parser::getScript() {
     currentToken = lexer->getScript();
     return currentToken.getValue();
 }
 
-void Parser::parse() {
-    std::vector<Node*> parents;
-    currentToken = lexer->getNextToken();
-    Node* docOpener = parseDoctype();
-    parents.push_back(docOpener);
-    currentToken = lexer->getNextToken();
-    while (currentToken.getType() == Comment){
-        parents.push_back(new Node(currentToken.getValue(), CommentNode, std::vector<Node*>(), std::vector<Node*>(), std::vector<Attribute>(), level));
-        currentToken = lexer->getNextToken();
-    }
-    root = parseElement();
-    root->setParents(parents);
-
-
-}
-
-Node *Parser::getRootNode() {
-    return root;
-}
-
-void Parser::printDOM() {
-    std::vector<Node*> children = root->getChildren();
-    std::vector<Node*> parents = root->getParents();
-    std::vector<Attribute> attributes = root->getAttributes();
-
-    for (auto parent : parents) {
-        std::cout << " " << parent->getName() << std::endl;
-    }
-    for (int i = 1; i < root->getLevel(); ++i){
-        std::cout << "---";
-    }
-    std::cout << " ";
-    std::cout << " " << root->getName() << " ";
-    for (auto attribute : attributes) {
-        std::cout << attribute.key << " = " << attribute.value;
-    }
-    std::cout << std::endl;
-    for (auto child : children) {
-        std::cout << child->getName() << " ";
-        for (auto attribute : child->getAttributes()) {
-            std::cout << attribute.key << " = " << attribute.value;
-        }
-        std::cout << std::endl;
-        if (child->getChildren().size() != 0) {
-            printNode(child);
-        }
-    }
-}
-
-void Parser::printNode(Node *node) {
-    std::vector<Node*> children = node->getChildren();
-    std::vector<Attribute> attributes = node->getAttributes();
-
-    for (auto child : children) {
-        for (int i = 1; i < child->getLevel(); i++){
-            std::cout << "---";
-        }
-        std::cout << " ";
-        std::cout << child->getName() << " ";
-        for (auto attribute : child->getAttributes()) {
-            std::cout << attribute.key << " = " << attribute.value;
-        }
-        std::cout << std::endl;
-        if (child->getChildren().size() != 0) {
-            printNode(child);
-        }
+void Parser::expect(TokenType expectedTokenType) {
+    if (currentToken.getType() != expectedTokenType) {
+        std::cout << "Error! Expected: " << getTokenTypeName(expectedTokenType)
+                  << " but found: " << getTokenTypeName(currentToken.getType()) << std::endl;
     }
 }

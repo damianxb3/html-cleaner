@@ -8,7 +8,7 @@
 enum NodeType {
     SingleTagNode,
     DoubleTagNode,
-    EmptyTagNode,
+    InlineTagNode,
     TextNode,
     CommentNode
 };
@@ -17,22 +17,18 @@ class Node {
 private:
     std::string name;
     NodeType type;
-    std::vector<Node*> parents;
     std::vector<Node*> children;
     std::vector<Attribute> attributes;
     int level;
 public:
-    Node(const std::string &name, NodeType type, const std::vector<Node *> &parents,
-         const std::vector<Node *> &children, const std::vector<Attribute> &attributes,
-         int nestedLevel);
+    Node(const std::string &name, NodeType type, const std::vector<Node *> &children,
+         const std::vector<Attribute> &attributes, int level);
 
     std::string getName();
     NodeType getType();
-    std::vector<Node*> getParents();
     std::vector<Node*> getChildren();
     std::vector<Attribute> getAttributes();
     int getLevel();
-    void setParents(std::vector<Node *> parent);
 };
 
 

@@ -9,10 +9,10 @@ set(COMMON_SOURCE_FILES
         Token.h Token.cpp
         Lexer.h Lexer.cpp
         Attribute.h
-        Node.h
-        Node.cpp
-        Parser.h
-        Parser.cpp)
+        TagOpener.h
+        Node.h Node.cpp
+        Parser.h Parser.cpp
+        HtmlDocument.h HtmlDocument.cpp )
 
 set(MAIN_SOURCE_FILES
         ${COMMON_SOURCE_FILES}

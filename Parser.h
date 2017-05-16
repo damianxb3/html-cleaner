@@ -4,33 +4,29 @@
 #include <stack>
 #include "Lexer.h"
 #include "Node.h"
+#include "HtmlDocument.h"
+#include "TagOpener.h"
 
 class Parser {
 private:
     Lexer* lexer;
-    Node* root;
     Token currentToken;
     int level;
     std::stack<std::string> tagNamesStack;
 public:
     Parser(Lexer *lexer);
-    void parse();
-    Node* getRootNode();
-    void printDOM();
+    HtmlDocument parse();
 
 private:
+    Node *parseDoctype();
+    std::vector<Node*> parseRootComments();
     Node *parseElement();
+    TagOpener parseTagOpener();
     Attribute parseAttribute();
     Node *parseElementEnd(std::vector<Attribute> attributes, std::vector<Node*> children);
     Node *parseContent();
-    Node *parseDoctype();
-    std::pair<std::string, std::vector<Attribute>> parseOpener();
-    const std::string &getScript();
-    const std::string &getStyle();
+    std::string getScript();
     void expect(TokenType expectedTokenType);
-    std::string expectCloseScript();
-
-    void printNode(Node *node);
 };
 
 

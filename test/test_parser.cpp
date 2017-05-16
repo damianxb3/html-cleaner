@@ -8,7 +8,7 @@ int main() {
     std::cout << "\nParser test running...\n";
     Lexer *lexer = new Lexer("../test/sample1.html");
     Parser parser = Parser(lexer);
-    parser.parse();
-    parser.printDOM();
+    HtmlDocument htmlDocument = parser.parse();
+    htmlDocument.printDOM();
     return 0;
 }
