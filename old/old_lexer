@@ -1,0 +1,226 @@
+#include <cstdio>
+#include "Lexer.h"
+#include "util.h"
+
+
+
+
+
+
+//
+//Lexer::Lexer(std::string file) {
+//    this->htmlSource.open(file, std::ifstream::in);
+//    this->position = Position();
+//}
+//
+//Token* Lexer::getNextToken() {
+//    while (isspace(currentChar) && currentChar != EOF) {
+//        nextChar();
+//    }
+//
+//    if (currentChar == EOF) {
+//        return new EOFToken(position);
+//    }
+//
+//    Position curPos = position;
+//    switch (currentChar) {
+//        case '<':
+//            nextChar();
+//            if (equals("!DOCTYPE")) {
+//                return getDoctype();
+//            }
+//            if (equals("!--")) {
+//                return getComment();
+//            }
+//            if (equals("script")) {
+//                return getScript();
+//            }
+//            if (currentChar == '/') {
+//                nextChar();
+//                return new ClosingTagOpenToken(curPos);
+//            }
+//            return new TagOpenToken(curPos);
+//
+//        case '>':
+//            nextChar();
+//            return new TagCloseToken(curPos);
+//
+//        case '/':
+//            nextChar();
+//            if (currentChar == '>') {
+//                nextChar();
+//                return new InlineTagCloseToken(curPos);
+//            }
+//            return new TextToken("/", curPos);
+//
+//        case '\"':
+//            nextChar();
+//            return getDoubleQuotedString();
+//
+//        case '\'':
+//            nextChar();
+//            return getSingleQuotedString();
+//
+//        case '=':
+//            nextChar();
+//            return new EqualsToken(curPos);
+//        case EOF:
+//            return new EOFToken(curPos);
+//    }
+//    std::string text = getNextWord("<>/\"\'=-");
+//    return new TextToken(text, curPos);
+//}
+//
+//TextToken* Lexer::getText() {
+//    std::string text;
+//    Position pos = this->position;
+//    while (currentChar != '<' && currentChar != EOF) {
+//        text += currentChar;
+//        nextChar();
+//    }
+//    return new TextToken(text, pos);
+//}
+//
+//
+//ScriptToken* Lexer::getScript() {
+//    std::string script = "<";
+//    Position pos = this->position;
+//    while (!equals("</script>")) {
+//        script += currentChar;
+//        nextChar();
+//    }
+//    script += "</script>";
+//    consume("</script>");
+//    return new ScriptToken(script, pos);
+//}
+//
+//void Lexer::nextChar() {
+//    currentChar = htmlSource.get();
+//    if (currentChar  == '\n') {
+//        position.incLine();
+//    }
+//    else {
+//        position.incColumn();
+//    }
+//    position.incPos();
+//}
+//
+//void Lexer::consume(std::string string) {
+//    for (int i = 0; i < string.size(); i++) {
+//        nextChar();
+//    }
+//}
+//
+//bool Lexer::equals(const std::string &string) {
+//    char *buffer = new char[64];
+//    std::streampos oldPos = htmlSource.tellg();
+//    htmlSource.unget();
+//    htmlSource.read(buffer, string.size());
+//    buffer[string.size()] = '\000';
+//    htmlSource.seekg(oldPos);
+//    return compareCaseInsensitive(buffer, string);
+//}
+//
+//std::string Lexer::getNextWord(const char *bound)
+//{
+//    std::string word;
+//    std::locale loc;
+//    char c;
+//    while ((c = currentChar) != EOF && !containsAny(bound, &c) && !isspace(c, loc))
+//    {
+//        word.push_back(c);
+//        nextChar();
+//    }
+//    return word;
+//}
+//
+//DoubleQuotedStringToken *Lexer::getDoubleQuotedString() {
+//    std::string content;
+//    Position pos = this->position;
+//    while (currentChar != '\"') {
+//        content += currentChar;
+//        nextChar();
+//    }
+//    nextChar();
+//    return new DoubleQuotedStringToken(content, pos);
+//}
+//
+//SingleQuotedStringToken *Lexer::getSingleQuotedString() {
+//    std::string content;
+//    Position pos = this->position;
+//    while (currentChar != '\'') {
+//        content += currentChar;
+//        nextChar();
+//    }
+//    nextChar();
+//    return new SingleQuotedStringToken(content, pos);
+//}
+//
+//DoctypeToken *Lexer::getDoctype() {
+//    std::string doctype = "<";
+//    Position pos = this->position;
+//    while (currentChar != '>') {
+//        doctype += currentChar;
+//        nextChar();
+//    }
+//    doctype += ">";
+//    nextChar();
+//    return new DoctypeToken(doctype, pos);
+//}
+//
+//CommentToken *Lexer::getComment() {
+//    std::string comment = "<";
+//    Position pos = this->position;
+//    while (!equals("-->")) {
+//        comment += currentChar;
+//        nextChar();
+//    }
+//    comment += "-->";
+//    consume("-->");
+//    return new CommentToken(comment, pos);
+//}
+Lexer::Lexer(std::string file) {
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+Token Lexer::getScript() {
+    std::string script;
+    while (true) {
+        if (showChar() == '<') {
+            script += getChar();
+            if (showChar() == '/') {
+                script += getChar();
+                std::string temp = getChars(std::string("script").length());
+                if (compareCaseInsensitive(temp, "script")) {
+                    script += temp;
+                    if (showChar() == '>') {
+                        script += getChar();
+                        script = script.substr(0, script.length() - std::string("</script>").length());
+                        return Token(Text, script, position);
+                    } else {
+                        script += getChar();
+                    }
+                } else {
+                    script += temp;
+                }
+            } else {
+                script += getChar();
+            }
+        } else if (showChar() == EOF) {
+            return Token(Text, script, position);
+        } else {
+            script += getChar();
+        }
+    }
+}

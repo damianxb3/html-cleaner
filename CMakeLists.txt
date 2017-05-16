@@ -3,5 +3,28 @@ project(html_cleaner)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES test_lexer.cpp Lexer.cpp Lexer.h tokens/Token.cpp tokens/Token.h Position.cpp Position.h tokens/EOFToken.h util.h util.cpp tokens/DoctypeToken.h tokens/CommentOpenToken.h tokens/ClosingTagOpenToken.h tokens/TagOpenToken.h tokens/TagCloseToken.h tokens/InlineTagCloseToken.h tokens/TextToken.h tokens/DoubleQuoteToken.h tokens/SingleQuoteToken.h tokens/EqualsToken.h tokens/CommentCloseToken.h)
-add_executable(html_cleaner ${SOURCE_FILES})
+set(COMMON_SOURCE_FILES
+        util.h util.cpp
+        Position.h Position.cpp
+        Token.h Token.cpp
+        Lexer.h Lexer.cpp
+        Attribute.h
+        Node.h
+        Node.cpp
+        Parser.h
+        Parser.cpp)
+
+set(MAIN_SOURCE_FILES
+        ${COMMON_SOURCE_FILES}
+        main.cpp)
+add_executable(html_cleaner ${MAIN_SOURCE_FILES})
+
+set(LEXER_TEST_SOURCE_FILES
+        ${COMMON_SOURCE_FILES}
+        test/test_lexer.cpp)
+add_executable(test_lexer ${LEXER_TEST_SOURCE_FILES})
+
+set(PARSER_TEST_SOURCE_FILES
+        ${COMMON_SOURCE_FILES}
+        test/test_parser.cpp)
+add_executable(test_parser ${PARSER_TEST_SOURCE_FILES})
