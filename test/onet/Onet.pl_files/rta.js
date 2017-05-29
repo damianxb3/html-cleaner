@@ -1,0 +1,1 @@
+﻿crtg_content = ''; (function(){document.cookie = 'onet_crt_adtech=' + escape(crtg_content) + '; path=/; expires=Thu, 22 Jun 2017 15:24:15 GMT; domain=onet.pl';})();

@@ -1,0 +1,161 @@
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+sub,
+sup,
+tt,
+var,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  border: 0 none;
+  font: inherit;
+  margin: 0;
+  padding: 0;
+  vertical-align: baseline;
+}
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: outside none none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  position: relative;
+  background: #000;
+  background: -moz-linear-gradient(top, #fbfbfb 0%, #eeeeee 40px, #000000 40px);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fbfbfb), color-stop(40px, #eeeeee), color-stop(40px, #000000));
+  background: -webkit-linear-gradient(top, #fbfbfb 0%, #eeeeee 40px, #000000 40px);
+  background: -o-linear-gradient(top, #fbfbfb 0%, #eeeeee 40px, #000000 40px);
+  background: -ms-linear-gradient(top, #fbfbfb 0%, #eeeeee 40px, #000000 40px);
+  background: linear-gradient(to bottom, #fbfbfb 0%, #eeeeee 40px, #000000 40px);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fbfbfb', endColorstr='#fbfbfb', GradientType=0);
+}
+body.hideVideoTitle {
+  background: #000000;
+}
+body .o_videoPlayer {
+  box-sizing: border-box;
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+body .shield {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  bottom: 0px;
+  z-index: 2147483647;
+}
+body .mvpContainer {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+}
+fakeControlsBar {
+  position: absolute;
+  z-index: -99999;
+  bottom: 0;
+  height: 40px;
+  width: 100%;
+  background: #F3F3F3;
+}

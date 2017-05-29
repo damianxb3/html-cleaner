@@ -71,11 +71,13 @@ Node* Parser::parseElement() {
             break;
         }
     }
-
+    // parseElement() -->
+    // return new Node
     return parseElementEnd(tagOpener.attributes, children);
 }
 
 TagOpener Parser::parseTagOpener() {
+    // zwracac null zamiast obiektu z no-name
     TagOpener tagOpener("", {});
 
     if (currentToken.getType() != Open) {
@@ -87,7 +89,7 @@ TagOpener Parser::parseTagOpener() {
     tagOpener.name = currentToken.getValue();
     currentToken = lexer->getNextToken();
 
-    while (true) {
+    while (true) { //<-- parseAttribute != nullptr in while
         Attribute attribute = parseAttribute();
         if (attribute.key == "") {
             break;

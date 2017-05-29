@@ -1,0 +1,30 @@
+body {
+	margin: 0;
+    padding: 0;
+	overflow: hidden;
+	
+	width: 100%;
+	
+	
+}
+.revitoxin-ad {
+	display: block;
+    max-width: 33.33333333333%;
+	
+	
+	float: left;
+}
+.revitoxin_container {
+	position: relative;
+	overflow: hidden;
+	text-align: left;
+}
+.revitoxin_img  {
+	
+	min-width: 100%;
+	max-width: 100%;
+	min-height: 100%;
+	max-height: 100%;
+}
+
+

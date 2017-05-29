@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- saved from url=(0090)http://sgqcvfjvr.onet.pl/inframe/passback.html#slot=flat-boxright4&tag=right4_adx&origin=0 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"><script type="text/javascript">/* <![CDATA[ */
+accConf = {"events":{"endpointPaths":["/a8f4d8cd95e164917035b64b867a45dd"]}};
+/* ]]> */</script>
+
+    <script type="text/javascript">
+        var parseParms = function (str) {
+            var pieces = str.split("&"), data = {}, i, parts;
+            for (var i = 0; i < pieces.length; i++) {
+                parts = pieces[i].split("=");
+                if (parts.length < 2) {
+                    parts.push("");
+                }
+                data[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
+            }
+            return data;
+        }
+        var param = parseParms(window.location.hash);
+        var to = parent;
+        var istop = false;
+        while (1) {
+            to.postMessage('fetchPassback,' + param['#slot'] + ',' + param['tag'] + ',' + (param['origin'] || ''), '*');
+            to = to.parent;
+            if (to == top) {
+                if (istop) {
+                    break;
+                }
+                istop = true;
+            }
+        }
+    </script>
+</head>
+<body marginwidth="0" marginheight="0">
+
+</body></html>

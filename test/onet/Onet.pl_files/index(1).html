@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<!-- saved from url=(0835)http://ocdn.eu/aops/mip/b/bank_millenium/20170519/950x200_onet-2_01999600_1495119884/index.html#click=https%3A%2F%2Fadclick.g.doubleclick.net%2Fpcs%2Fclick%3Fxai%3DAKAOjstPDj8jITwrf8W-cOsF3kMbOpy6Q6YiiDyWqefYs836wZXJMqD0g0oV3LFZTHGg6P76JVNplZOEuXZyDY4XNt7iPDo0SlckfV2WbHuSHHFddfKmmPbcC10XkZNz0M9scNJJLKVPaz9fFaAV9zR-%2Do2ECxXfsaTAd2sTQLMTD2ooN47PwlHWVUjkvnB2wskL5eYkoaGspDL7C9GdLxVu9eHjX8jf3t-yL_14V1z9jwc%26sig%3DCg0ArKJSzPSm6nD_iytxEAE%26urlfix%3D1%26adurl%3Dhttps%3A%2F%2Fonet.hit.gemius.pl%2Flshitredir%2Fid%3Dp8XlRr7fZUo3KW8K_7K7E6QPrhxiF4OepSF2G6V.pTD.b7%2Ffastid%3Dnrfkojodsnmloplupwcspwuolvnv%2Fstparam%3Dmcjqmrmrmi%2Furl%3Dhttps%3A%2F%2Fwww.bankmillennium.pl%2Fkonto-360-fl%3FportalId%3D248%26utm_source%3DOnet%26utm_medium%3DWB%26utm_campaign%3DDKM_248%26utm_term%3DKonto_360%26utm_content%3D2017_May%26nr%3D46280010260101010 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<style>
+body, html, p, div.canvas { font-family: Arial, sans-sans !important; }
+body, html { margin: 0; padding: 0; cursor: pointer !important; overflow-x: hidden; }
+.closeme { width: 141px; height: 43px; position: absolute; z-index: 1000; top: 10px; right: 10px; background: url(close.png) no-repeat; }</style>
+<title>Kreacja 950/200 | onet</title>
+
+<script type="text/javascript" id="www-widgetapi-script" src="./www-widgetapi.js" async=""></script><script src="./easeljs-0.6.0.min.js"></script>
+<script src="./tweenjs-0.4.0.min.js"></script>
+<script src="./movieclip-0.6.0.min.js"></script>
+<script src="./preloadjs-0.3.0.min.js"></script>
+<script src="./950x200.js"></script>
+
+<script>
+var canvas, stage, exportRoot;
+
+function init() {
+	canvas = document.getElementById("canvas");
+	images = images||{};
+
+	var manifest = [
+		{src:"images/img00.jpg", id:"img00"},
+		{src:"images/img11.jpg", id:"img11"},
+		{src:"images/img12.jpg", id:"img12"}
+	];
+
+	var loader = new createjs.LoadQueue(false);
+	loader.addEventListener("fileload", handleFileLoad);
+	loader.addEventListener("complete", handleComplete);
+	loader.loadManifest(manifest);
+}
+
+function handleFileLoad(evt) {
+	if (evt.item.type == "image") { images[evt.item.id] = evt.result; }
+}
+
+function handleComplete() {
+	exportRoot = new lib._950x200();
+
+	stage = new createjs.Stage(canvas);
+	stage.addChild(exportRoot);
+	stage.update();
+	stage.enableMouseOver();
+
+	createjs.Ticker.setFPS(20);
+	createjs.Ticker.addEventListener("tick", stage);
+    if (exportRoot.legal_mc) {
+            exportRoot.legal_mc.addEventListener('mouseover', function() {
+            openLegal();
+        });
+        exportRoot.legal_mc.addEventListener('mouseout', function() {
+            closeLegal();
+        });
+        }
+
+}
+</script>
+<style>
+    canvas {
+        position: relative;
+        z-index: 9999;
+        pointer-events: none;
+    }
+
+    #creativelink {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+    }
+
+    /* sellplus player icons START */
+    .sellplus-player-control .play-btn,
+    .sellplus-player-control .pause-btn,
+    .sellplus-player-control .mute-btn,
+    .sellplus-player-control .unmute-btn {
+        width: 25px;
+        height: 25px;
+        border: 0;
+        padding: 0;
+        outline: 0;
+        display: inline-block;
+    }
+
+    .sellplus-player-control .play-btn {
+        background: url('./play.png') no-repeat;
+    }
+    .sellplus-player-control .pause-btn {
+        background: url('./pause.png') no-repeat;
+    }
+    .sellplus-player-control .mute-btn {
+        background: url('./mute.png') no-repeat;
+    }
+    .sellplus-player-control .unmute-btn {
+        background: url('./unmute.png') no-repeat;
+    }
+    /* sellplus player icons END */
+</style>
+
+<script src="./iframe_api"></script>
+
+<!--YT player start-->
+<script>
+    var player;
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('video-placeholder', {
+            width: 491,
+            height: 276,
+            videoId: '_GbRUCHZhT8',
+            wmode: 'transparent',
+            playerVars: {
+                'autoplay': 1,
+                'controls': 0,
+                'autohide': 1,
+                'wmode': 'opaque',
+                'showinfo': 0,
+                'loop': 1,
+                'mute': 1,
+                'start': 0,
+                'iv_load_policy': 3,
+                //'end': 30,
+                'rel': 0
+            },
+            events: {
+                onReady: function(e) {
+                    e.target.mute();
+                    e.target.setVolume(0);
+                    sellplusEventsHandlers();
+                },
+                onStateChange: function(e) {
+                    var sellplusPlay = document.getElementById('sellplusPlay');
+
+                    switch (e.data) {
+                        case 1:
+                            sellplusPlay.className = 'pause-btn';
+                            break;
+
+                        case 2:
+                            sellplusPlay.className = 'play-btn';
+                            break;
+
+                        case 0:
+                            sellplusPlay.className = 'play-btn';
+                                                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    function getSellplusPlayer() {
+        return document.getElementsByClassName('sellplus-player')[0];
+    }
+
+    function getSellplusVideo() {
+        return document.getElementById('video-placeholder');
+    }
+
+    function sellplusPlayerPlay(event) {
+        event.stopPropagation();
+
+        var sellplusPlay = document.getElementById('sellplusPlay');
+
+        if (player.getPlayerState() !== 1) {
+            player.playVideo();
+            sellplusPlay.className = 'pause-btn';
+
+            var sellplusMute = document.getElementById('sellplusMute');
+            player.unMute();
+            sellplusMute.className = 'mute-btn';
+        } else {
+            player.pauseVideo();
+            sellplusPlay.className = 'play-btn';
+        }
+    }
+
+    function sellplusPlayerMute(event) {
+        event.stopPropagation();
+
+        var sellplusMute = document.getElementById('sellplusMute');
+
+        if (!player.isMuted()) {
+            player.mute();
+            sellplusMute.className = 'unmute-btn';
+        } else {
+            player.unMute();
+            sellplusMute.className = 'mute-btn';
+        }
+    }
+
+    function sellplusEventsHandlers() {
+        var sellplusPLayer = getSellplusPlayer();
+        var playerControlsUsed = false;
+
+        if (sellplusPLayer.className.length > 1) {
+            var sellplusVideo = getSellplusVideo();
+            var sellplusMute = document.getElementById('sellplusMute');
+            var sellplusPlay = document.getElementById('sellplusPlay');
+
+            if (sellplusPLayer.className.indexOf('unmute-on-mouse-over') > -1) {
+                sellplusVideo.addEventListener('mouseover', function () {
+                    if (playerControlsUsed) return;
+
+                    player.unMute();
+                    sellplusMute.className = 'mute-btn';
+                });
+            }
+
+            if (sellplusPLayer.className.indexOf('mute-on-mouse-out') > -1) {
+                sellplusVideo.addEventListener('mouseout', function () {
+                    if (playerControlsUsed) return;
+
+                    player.mute();
+                    sellplusMute.className = 'unmute-btn';
+                });
+            }
+
+            if (sellplusPLayer.className.indexOf('play-on-mouse-over') > -1) {
+                sellplusVideo.addEventListener('mouseover', function () {
+                    if (playerControlsUsed) return;
+
+                    player.playVideo();
+                    sellplusPlay.className = 'pause-btn';
+                });
+            }
+
+            if (sellplusPLayer.className.indexOf('pause-on-mouse-out') > -1) {
+                sellplusVideo.addEventListener('mouseout', function () {
+                    if (playerControlsUsed) return;
+
+                    player.pauseVideo();
+                    sellplusPlay.className = 'play-btn';
+                });
+            }
+        }
+
+        document.getElementById('sellplusPlay').addEventListener('click', function (e) {
+            e.preventDefault();
+
+            playerControlsUsed = true;
+
+            sellplusPlayerPlay(e);
+        });
+
+        document.getElementById('sellplusMute').addEventListener('click', function (e) {
+            e.preventDefault();
+
+            playerControlsUsed = true;
+
+            sellplusPlayerMute(e);
+        });
+    }
+</script>
+<!--YT player stop-->
+<style>
+#legal {
+    padding:18px;
+    position: absolute;
+    width: calc(90% - 36px);
+    height: auto;
+    max-height: calc(90% - 36px);
+    background: #fff;
+    z-index: 9999;
+    top: 5%;
+    left: 5%;
+    font-size: 10px;
+    -webkit-box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.5);
+    overflow: auto;
+    text-align: justify;
+    -webkit-transition: all 200ms ease-in-out;
+    -moz-transition: all 200ms ease-in-out;
+    -ms-transition: all 200ms ease-in-out;
+    -o-transition: all 200ms ease-in-out;
+    transition: all 200ms ease-in-out;
+    opacity: 1;
+    display: block;
+    pointer-events: auto;
+}
+#legal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#legal p {
+    display: block;
+    padding: 0 1em 0 1em;
+}
+
+#legal_button_close {
+    position: absolute;
+    background-color: white;
+    color:  #cecece;
+    font-size: 20px;
+    top: 5px;
+    right: 5px;
+}
+</style>
+
+<script>
+function clickTagHandler(fn) {
+    if (document.getElementById('legal').className === 'hidden') {
+        fn();
+    }
+}
+
+function openLegal() {
+    document.getElementById('legal').className = '';
+}
+
+function closeLegal(e) {
+    if (typeof e !== 'undefined') {
+        e.stopPropagation();
+    }
+    document.getElementById('legal').className = 'hidden';
+}
+</script>
+
+<link href="./css(1)" rel="stylesheet">
+<style>
+#legal {
+
+font-family: 'Lato', sans-serif;
+line-height: 120%;    
+width: 950px;
+height: 200px;
+padding:0px;
+ max-height: 200px;    
+ 
+    position: absolute;
+    background: #fff;
+    z-index: 9999;
+    top: 0px;
+    left: 0px;
+    font-size: 12px;
+    overflow: auto;
+    text-align: justify;
+    -webkit-transition: all 200ms ease-in-out;
+    -moz-transition: all 200ms ease-in-out;
+    -ms-transition: all 200ms ease-in-out;
+    -o-transition: all 200ms ease-in-out;
+    transition: all 200ms ease-in-out;
+    opacity: 1;
+    display: block;
+    pointer-events: auto; 
+	z-index: 99999;
+}
+#legal.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#legal p {
+    display: block;
+    padding: 0 1em 0 1em;
+}
+</style>
+</head>
+
+<body onload="init();" style="background-color: rgba(255,255,255,0);" marginwidth="0" marginheight="0">
+    <!--CLICKTAG start-->
+    <script>
+        var params = {};
+        window.location.href.replace(/[?#&]+([^=&]+)=([^&]*)/gi, function(m,key,value) { params[key] = decodeURIComponent(value);});
+    </script>
+    <!--CLICKTAG stop-->
+
+    <div class="clickme" onclick="clickTagHandler(function() { window.open(params.click); });" style="cursor: pointer; position: absolute; width: 948px; height: 198px; border: 1px solid rgba(0,0,0,0); overflow: hidden;">
+                <div class="sellplus-player play-on-mouse-over" style="position: absolute;
+            left: 0px; top: -46px;">
+            <div style="position: relative;">
+                <div id="video-placeholder"></div>
+                <div style="position: absolute; z-index: 10000; left: 10px;
+                    top: 200px;">
+                    <div class="sellplus-player-control">
+                        <button id="sellplusPlay" class="pause-btn"></button>
+                        <button id="sellplusMute" class="unmute-btn"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+        <canvas id="canvas" width="950" height="200" style="background-color: transparent;"></canvas>
+        
+<div id="legal" class="hidden">
+    <p>Zwolnienie z opłat za prowadzenie Konta 360° i kartę oraz wypłaty z bankomatów w przypadku zaksięgowania na koncie min. 1000 zł wpływów zewnętrznych i min. 1 płatności kartą do konta/BLIKIEM w miesiącu. Za wypłaty z bankomatów za granicą ich operatorzy mogą pobierać opłaty niezależne od Banku pod warunkiem poinformowania Posiadacza karty przed dokonaniem operacji. Opłata ta nie jest przychodem Banku Millennium S.A. Wypłata w walucie obcej przeliczana jest na PLN, co wiąże się z dodatkową marżą określoną w Cenniku usług. Do konta oferowany jest opcjonalny „Pakiet Bardzo Pomocny” uprawniający do 7 świadczeń assistance (medycznych/technicznych) bezpłatny przez pierwszych 12 miesięcy prowadzenia konta. Przez 6 miesięcy możliwy jest zwrot 2% płatności kartą do konta (do 30 zł/mies.) oraz 5% płatności BLIKIEM (do 30 zł/mies.) pod warunkiem zalogowania się do aplikacji mobilnej oraz zaksięgowania na koncie min. 1000 zł wpływów zewnętrznych i min. 1 płatności kartą do konta/BLIKIEM w danym miesiącu. Promocja dotyczy osób, które od 29.02.2016 r. do 25.02.2017 r. nie posiadały w Banku ROR lub Konta Technicznego i do 30.06.2017 r. otworzą Konto 360° z kartą do tego konta, wyrażą zgody na przetwarzanie danych osobowych dla celów marketingu Banku za pomocą środków porozumiewania się na odległość oraz spełnią pozostałe warunki Promocji. Opłaty, oprocentowanie i inne szczegóły oferty zawarte są w Cenniku usług, Cenniku usług – prowizje i opłaty, Regulaminie ogólnym świadczenia usług bankowych dla osób fizycznych w Banku Millennium S.A, Regulaminie Promocji „Zyskaj 360 zł” – 5 edycja, Regulaminie Oferty oraz Ogólnych Warunkach Ubezpieczenia i Karcie Produktu „Pakiet Bardzo Pomocny", dostępnych w placówkach Banku oraz na www.bankmillennium.pl</p>
+</div>
+    </div>
+
+
+</body></html>

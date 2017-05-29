@@ -1,0 +1,6 @@
+/home/damian/Repositories/html-cleaner/CMakeFiles/rebuild_cache.dir
+/home/damian/Repositories/html-cleaner/CMakeFiles/test_generator.dir
+/home/damian/Repositories/html-cleaner/CMakeFiles/edit_cache.dir
+/home/damian/Repositories/html-cleaner/CMakeFiles/test_parser.dir
+/home/damian/Repositories/html-cleaner/CMakeFiles/test_lexer.dir
+/home/damian/Repositories/html-cleaner/CMakeFiles/html_cleaner.dir
