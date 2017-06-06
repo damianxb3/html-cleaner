@@ -3,28 +3,25 @@
 
 
 #include "HtmlDocument.h"
+#include "Configuration.h"
+#include "Parser.h"
 
 class HtmlGenerator {
 private:
-    std::ostream& output;
+    std::ofstream output;
+    std::set<CleanerOption> options;
+    Parser* parser;
     int level = 0;
-    bool isPrintDoctype = true;
-    bool isPrintComments = false;
-    bool isPrintAttributes = false;
-    bool isPrintScripts = false;
-    bool isPrintStyles = false;
 
 public:
-    HtmlGenerator(std::ostream &output);
-
-    void generate(HtmlDocument document);
-    void printElement(Node* node);
-
+    HtmlGenerator(Configuration& configuration);
+    ~HtmlGenerator();
+    void generate();
 private:
-
+    void printElement(Node* node);
     void printAttributes(Node* node, std::ostream &output);
-
     void printLevelTabs();
+    bool isOptionSet(CleanerOption option);
 };
 
 

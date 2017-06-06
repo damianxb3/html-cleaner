@@ -7,10 +7,11 @@
 
 int main() {
     std::cout << "\nGenerator test running...\n";
-    Lexer *lexer = new Lexer("../test/onet/Onet.pl.html");
-    Parser *parser = new Parser(lexer);
-    HtmlDocument htmlDocument = parser->parse();
-    HtmlGenerator *htmlGenerator = new HtmlGenerator(std::cout);
-    htmlGenerator->generate(htmlDocument);
+    Configuration configuration;
+    configuration.setInputFile("../test/onet/Onet.pl.html");
+    configuration.setOutputFile("../test/onet/Onet.pl.out.html");
+
+    HtmlGenerator *htmlGenerator = new HtmlGenerator(configuration);
+    htmlGenerator->generate();
     return 0;
 }

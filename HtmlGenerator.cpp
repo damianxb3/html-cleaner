@@ -1,27 +1,39 @@
 #include "HtmlGenerator.h"
 
-HtmlGenerator::HtmlGenerator(std::ostream &output) : output(output) {}
+HtmlGenerator::HtmlGenerator(Configuration& configuration) {
+    options = configuration.getOptions();
+    auto lexer = new Lexer(configuration.getInputFilePath());
+    parser = new Parser(lexer);
+    output.open(configuration.getOutputFilePath(), std::ofstream::out);
+}
 
-void HtmlGenerator::generate(HtmlDocument document) {
+HtmlGenerator::~HtmlGenerator() {
+    output.close();
+}
 
-    if (isPrintDoctype) {
-        output << "<!DOCTYPE" << document.getDoctype()->getName() << ">\n";
+void HtmlGenerator::generate() {
+    HtmlDocument htmlDocument = parser->parse();
+
+    if (!isOptionSet(DOCTYPE_OPTION)) {
+        output << "<!DOCTYPE" << htmlDocument.getDoctype()->getName() << ">\n";
     }
 
-    if (isPrintComments) {
-        for (auto comment : document.getRootComments()) {
+    if (!isOptionSet(COMMENTS_OPTION)) {
+        for (auto comment : htmlDocument.getRootComments()) {
             output << "<!--" << comment->getName() << "-->\n";
         }
     }
 
-    printElement(document.getRootNode());
+    printElement(htmlDocument.getRootNode());
+    output.close();
 }
+
 
 void HtmlGenerator::printElement(Node* node) {
     printLevelTabs();
 
     if (node->getType() == CommentNode) {
-        if (!isPrintComments) {
+        if (!isOptionSet(COMMENTS_OPTION)) {
             return;
         }
         output << "<!--" << node->getName() << "-->\n";
@@ -33,16 +45,16 @@ void HtmlGenerator::printElement(Node* node) {
         return;
     }
 
-    if (!isPrintScripts && node->getName() == "script") {
+    if (isOptionSet(SCRIPTS_OPTION) && node->getName() == "script") {
         return;
     }
 
-    if (!isPrintStyles && node->getName() == "style") {
+    if (isOptionSet(STYLES_OPTION) && node->getName() == "style") {
         return;
     }
 
     output << "<" << node->getName();
-    if (isPrintAttributes) {
+    if (!isOptionSet(ATTRIBUTES_OPTION)) {
         printAttributes(node, output);
     }
 
@@ -80,7 +92,6 @@ void HtmlGenerator::printElement(Node* node) {
     output << "\n";
 }
 
-
 void HtmlGenerator::printLevelTabs() {
     for (int i = 0; i < level; i++) {
         output << "  ";
@@ -91,4 +102,8 @@ void HtmlGenerator::printAttributes(Node* node, std::ostream &output) {
     for (auto attribute : node->getAttributes()) {
         output << " " + attribute.key + (attribute.value != "" ? ("=\"" + attribute.value + "\"") : "");
     }
+}
+
+bool HtmlGenerator::isOptionSet(CleanerOption option) {
+    return options.find(DOCTYPE_OPTION) != options.end();
 }
