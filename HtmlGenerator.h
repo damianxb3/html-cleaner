@@ -12,6 +12,7 @@ private:
     std::set<CleanerOption> options;
     Parser* parser;
     int level = 0;
+    std::vector<Node*> parentNodes = {};
 
 public:
     HtmlGenerator(Configuration& configuration);
@@ -22,6 +23,11 @@ private:
     void printAttributes(Node* node, std::ostream &output);
     void printLevelTabs();
     bool isOptionSet(CleanerOption option);
+    void printStructure(HtmlDocument& htmlDocument);
+
+    void printOneNodeToStructureOutput(Node* node);
+
+    bool isChildrenTextNodes(Node* parentNode);
 };
 
 

@@ -35,12 +35,12 @@ Node* Parser::parseElement() {
     std::vector<Node*> children;
     auto tagOpener = parseTagOpener();
 
-    if (tagOpener.name == "") {
+    if (tagOpener == nullptr) {
         return nullptr;
     }
 
-    if(currentToken.getType() == CloseEmpty) {
-        return new Node(tagOpener.name, InlineTagNode, {}, tagOpener.attributes, level);
+    if (currentToken.getType() == CloseEmpty) {
+        return new Node(tagOpener->name, InlineTagNode, {}, tagOpener->attributes, level);
     }
 
     if (currentToken.getType() != Close) {
@@ -49,17 +49,17 @@ Node* Parser::parseElement() {
         return nullptr;
     }
 
-    if (isSingleTag(tagOpener.name)) {
-        return new Node(tagOpener.name, SingleTagNode, {}, tagOpener.attributes, level);
+    if (isSingleTag(tagOpener->name)) {
+        return new Node(tagOpener->name, SingleTagNode, {}, tagOpener->attributes, level);
     }
 
-    if (compareCaseInsensitive(toLowerCase(tagOpener.name), "script")) {
+    if (compareCaseInsensitive(toLowerCase(tagOpener->name), "script")) {
         std::string script = getScript();
         children.push_back(new Node(script, TextNode, {}, {}, level + 1));
-        return new Node(tagOpener.name, DoubleTagNode, children, tagOpener.attributes, level);
+        return new Node(tagOpener->name, DoubleTagNode, children, tagOpener->attributes, level);
     }
 
-    tagNamesStack.push(tagOpener.name);
+    tagNamesStack.push(tagOpener->name);
 
     while (true) {
         level++;
@@ -71,55 +71,50 @@ Node* Parser::parseElement() {
             break;
         }
     }
-    // parseElement() -->
-    // return new Node
-    return parseElementEnd(tagOpener.attributes, children);
+    return parseElementEnd(tagOpener->attributes, children);
 }
 
-TagOpener Parser::parseTagOpener() {
-    // zwracac null zamiast obiektu z no-name
-    TagOpener tagOpener("", {});
+TagOpener *Parser::parseTagOpener() {
 
     if (currentToken.getType() != Open) {
-        return tagOpener;
+        return nullptr;
     }
 
     currentToken = lexer->getNextToken();
     expect(Name);
-    tagOpener.name = currentToken.getValue();
-    currentToken = lexer->getNextToken();
+    TagOpener *tagOpener = new TagOpener(currentToken.getValue(), {});
 
-    while (true) { //<-- parseAttribute != nullptr in while
-        Attribute attribute = parseAttribute();
-        if (attribute.key == "") {
-            break;
-        }
-        tagOpener.attributes.push_back(attribute);
+    currentToken = lexer->getNextToken();
+    Attribute *attribute;
+    while ((attribute = parseAttribute()) != nullptr) {
+        tagOpener->attributes.push_back(*attribute);
     }
+
     return tagOpener;
 }
 
-Attribute Parser::parseAttribute() {
-    Attribute attribute("", "");
+Attribute *Parser::parseAttribute() {
 
     if (currentToken.getType() != Name) {
-        return attribute;
+        return nullptr;
     }
 
-    attribute.key = currentToken.getValue();
+    auto key = currentToken.getValue();
+
     currentToken = lexer->getNextToken();
     if (currentToken.getType() != Equals) {
-        return attribute;
+        return new Attribute(key, "");
     }
 
     currentToken = lexer->getNextToken();
     expect(Value);
     if (currentToken.getType() == Value) {
-        attribute.value = currentToken.getValue();
+        Attribute* attribute = new Attribute(key, currentToken.getValue());
         currentToken = lexer->getNextToken();
+        return attribute;
     }
-
-    return attribute;
+    currentToken = lexer->getNextToken();
+    return new Attribute(currentToken.getValue(), "");
 }
 
 Node *Parser::parseContent() {
@@ -131,8 +126,8 @@ Node *Parser::parseContent() {
     if (token.getType() == Empty) {
         currentToken = lexer->getNextToken();
     } else {
-        std::cout << "Error! Expected Text or Empty but found "
-                  << getTokenTypeName(token.getType()) << std::endl;
+        std::cout << "Error! Pos: [" << currentToken.getPosition().getLine() << "," << currentToken.getPosition().getColumn() << "] "
+                  << "Error! Expected Text or Empty but found ";
     }
 
     if (currentToken.getType() == Comment) {
@@ -148,7 +143,8 @@ Node *Parser::parseElementEnd(std::vector<Attribute> attributes, std::vector<Nod
     expect(Name);
     std::string name = currentToken.getValue();
     if (name != tagNamesStack.top()) {
-        std::cout << "Error: No closing tag for " << tagNamesStack.top()
+        std::cout << "Error! Pos: [" << currentToken.getPosition().getLine() << "," << currentToken.getPosition().getColumn() << "] "
+                  << "No closing tag for " << tagNamesStack.top()
                   << ", found " << name << " instead." << std::endl;
         return nullptr;
     }
@@ -165,7 +161,8 @@ std::string Parser::getScript() {
 
 void Parser::expect(TokenType expectedTokenType) {
     if (currentToken.getType() != expectedTokenType) {
-        std::cout << "Error! Expected: " << getTokenTypeName(expectedTokenType)
+        std::cout << "Error! Pos: [" << currentToken.getPosition().getLine() << "," << currentToken.getPosition().getColumn() << "] "
+                  << "Expected: " << getTokenTypeName(expectedTokenType)
                   << " but found: " << getTokenTypeName(currentToken.getType()) << std::endl;
     }
 }

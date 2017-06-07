@@ -26,21 +26,23 @@ void HtmlGenerator::generate() {
 
     printElement(htmlDocument.getRootNode());
     output.close();
+
+    printStructure(htmlDocument);
 }
 
 
 void HtmlGenerator::printElement(Node* node) {
-    printLevelTabs();
-
     if (node->getType() == CommentNode) {
-        if (!isOptionSet(COMMENTS_OPTION)) {
+        if (isOptionSet(COMMENTS_OPTION)) {
             return;
         }
+        printLevelTabs();
         output << "<!--" << node->getName() << "-->\n";
         return;
     }
 
     if (node->getType() == TextNode) {
+        printLevelTabs();
         output << node->getName() << "\n";
         return;
     }
@@ -53,6 +55,7 @@ void HtmlGenerator::printElement(Node* node) {
         return;
     }
 
+    printLevelTabs();
     output << "<" << node->getName();
     if (!isOptionSet(ATTRIBUTES_OPTION)) {
         printAttributes(node, output);
@@ -105,5 +108,40 @@ void HtmlGenerator::printAttributes(Node* node, std::ostream &output) {
 }
 
 bool HtmlGenerator::isOptionSet(CleanerOption option) {
-    return options.find(DOCTYPE_OPTION) != options.end();
+    return options.find(option) != options.end();
+}
+
+void HtmlGenerator::printStructure(HtmlDocument& htmlDocument) {
+    parentNodes = {};
+    std::cout << "DOM structure: " << std::endl;
+    printOneNodeToStructureOutput(htmlDocument.getRootNode());
+}
+
+void HtmlGenerator::printOneNodeToStructureOutput(Node* node) {
+    parentNodes.push_back(node);
+    if (node->getChildren().empty() || isChildrenTextNodes(node)) {
+        if (node->getType() != TextNode && node->getType() != CommentNode) {
+            for (auto parentNode : parentNodes) {
+                std::cout << parentNode->getName();
+                if (parentNode != node) {
+                    std::cout << " -> ";
+                }
+            }
+            std::cout << std::endl;
+        }
+    } else {
+        for (auto child : node->getChildren()) {
+            printOneNodeToStructureOutput(child);
+        }
+    }
+    parentNodes.pop_back();
+}
+
+bool HtmlGenerator::isChildrenTextNodes(Node* parentNode) {
+    for (auto child : parentNode->getChildren()) {
+        if (child->getType() != TextNode) {
+            return false;
+        }
+    }
+    return true;
 }

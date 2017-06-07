@@ -23,7 +23,7 @@ void initializeConfiguration(Configuration& configuration, int argc, char** argv
             ("styles,s", "Clean styles if present")
             ("scripts,S", "Clean scripts if present")
             ("doctype,D", "Clean doctype")
-            ("comments,C", "Clean comments")
+            ("comments,c", "Clean comments")
             ("input-file", "Input file")
             ("output-file", "Output file");
 

@@ -21,8 +21,8 @@ private:
     Node *parseDoctype();
     std::vector<Node*> parseRootComments();
     Node *parseElement();
-    TagOpener parseTagOpener();
-    Attribute parseAttribute();
+    TagOpener *parseTagOpener();
+    Attribute *parseAttribute();
     Node *parseElementEnd(std::vector<Attribute> attributes, std::vector<Node*> children);
     Node *parseContent();
     std::string getScript();
