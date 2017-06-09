@@ -40,3 +40,13 @@ void HtmlDocument::printNode(Node *node) {
         printNode(nodeChild);
     }
 }
+
+HtmlDocument::~HtmlDocument() {
+    delete doctype;
+    for (auto comment : rootComments) {
+        if (comment != nullptr) {
+            delete comment;
+        }
+    }
+    delete rootNode;
+}

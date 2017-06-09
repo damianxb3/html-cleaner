@@ -1,0 +1,370 @@
+\documentclass[11pt]{article}
+% Polish
+\usepackage[utf8]{inputenc}
+\usepackage{polski}
+\usepackage[polish]{babel}
+% Graphics
+\usepackage{graphicx}
+% Margins
+\usepackage[margin=1.2in]{geometry}
+% Enumerating
+\usepackage{enumitem}
+% Footnote bottom
+\usepackage[bottom]{footmisc}
+% Verbatim small font
+\usepackage{fancyvrb}
+% C++
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{courier}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\def\code#1{\texttt{#1}}
+\lstset {
+    language=C++,
+    backgroundcolor=\color{black!5},
+    basicstyle=\footnotesize,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}}
+    
+    
+\title{Techniki Kompilacji - Dokumentacja końcowa \\ \large Oczyszczanie pliku HTML}
+\author{Damian Bułak}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Wstęp}
+Celem projektu jest stworzenie programu w języku C++ umożliwiającego oczyszczenie kodu HTML ze wszystkich atrybutów, skryptów, styli w taki sposób, aby kod wynikowy zawierał jedynie strukturę HTML bez elementów formatujących oraz udostępniającej strukturę zagnieżdżeń dokumentu.
+
+\section{Funkcjonalność}
+Program realizuje zadanie przetwarzania wejściowego pliku HTML w celu usunięcia żądanych elementów. Użytkownik ma możliwość wyszczególnienia jakie elementy mają zostać usunięcie spośród następujących:
+\begin{enumerate}
+\item atrybuty
+\item style zawarte w tagach \code{<style>...</style>}
+\item skrypty JS zawarte w tagach \code{<script>...</script>}
+\item komentarze \code{<!-- ... -->}
+\item doctype \code{<!DOCTYPE ...>}
+\end{enumerate}
+
+Program ma także udostępniać strukturę zagnieżdżeń, która przy każdym uruchomieniu programu zostanie wydrukowana na wyjście standardowe.\\
+Wyjściowy plik HTML zostanie natomiast zapisany pod żądaną przez użytkownika ścieżką.
+
+Aplikacja składa się z trzech modułów:
+\begin{enumerate}
+\item Leksera zczytującego z pliku wejściowego tokeny
+\item Parsera analizującego otrzymywane od leksera tokeny i tworząc strukturę dokumentu HTML
+\item Generatora kodu przetwarzającego wyprodukowane przez parser struktury i generującego wyjściowy plik HTML w zależności od podanej przez użytkownika konfiguracji tak, że żądane elementy do usunięcia nie znajdą się w pliku wyjściowym
+\end{enumerate}
+
+
+\subsection{Lekser}
+Moduł leksera na wejściu otrzymuje ścieżkę do pliku, który wczytuje strumieniowo i po kolei produkuje na wyjściu tokeny.\\
+Lekser udostępnia następujące funkcje:
+\begin{itemize}
+\item \code{Token getNextToken()} - pobiera następny token zgodnie ze zdefiniowanymi dla HTML tokenami
+\item \code{Token getText()} - pobiera tekst pomiędzy tagami HTML tak długo aż napotka tag otwarcie tagu HTML \code{<}
+\item \code{Token getScript()} - pobiera skrypt JS (JavaScript nie jest parsowany przez aplikację) - wczytuje tak długo aż napotka tag zamykający \code{</script>}
+\end{itemize}
+
+\subsubsection{Tokeny}
+Lista akceptowalnych tokenów używana przez analizator leksykalny:
+\begin{itemize}
+\item OpenDoctype - otwarcie doctype'u
+	\begin{verbatim}
+	<!DOCTYPE
+	\end{verbatim}
+\item Open - otwarcie taga otwierającego HTML
+	\begin{verbatim}
+	<
+	\end{verbatim}
+\item OpenEnd - otwarcie taga zamykającego
+	\begin{verbatim}
+	</
+	\end{verbatim}
+\item Close - zamknięcie taga
+	\begin{verbatim}
+	>
+	\end{verbatim}
+\item Name - nazwa taga, np. \code{html} dla \code{<html...}
+	\begin{verbatim}
+	^[a-zA-Z]([a-zA-Z1-6:-])*	
+	\end{verbatim}
+\item Equals - znak równosci (przypisanie wartości atrybutu do klucza)
+	\begin{verbatim}
+	=
+	\end{verbatim}
+\item Value - wartość atrybutu - dowolny ciąg pomiędzy pojedynczym lub podwójnym cudzysłowem
+\item Text - zwracany po getText lub getScript
+\item CloseEmpty - zamknięcie taga \textit{inline}, np. \code{<br/>}
+\item Comment - dowolny ciąg otoczony znakiem początku i końca komentarza HTML: \code{<!-- ..... -->}
+\item EndOfFile - koniec pliku HTML
+\item Empty - zwracany przez getText, gdy wystepują pomiędzy tagami tylko białe znaki
+\item Undefined - niezdefiniowany nieznany token informujący o niepoprawnym leksykalnie pliku HTML
+\end{itemize}
+
+\subsection{Parser}
+Moduł parsera zależy od leksera i na wejściu otrzymuje (na żądane) kolejne tokeny.
+Parser udostępnia funkcję \code{HtmlDocument parse()}, która zwraca strukturę dokumentu HTML w postaci obiektu \code{HtmlDocument} 
+Zbudowany w aplikacji parser jest parserem RD.
+
+\subsection{Gramatyka}
+
+\begin{verbatim}
+document = doctype , { [comment] } , element
+doctype = "<!DOCTYPE" , name , ">"
+comment = "<!--" , text , "-->"
+element = tagOpener , ("/>" | ">" | {element}, endingTag | string)
+		| comment
+tagOpener = "<" , name , { [attribute] }
+attribute = name , ["=" , value]
+value := " \' " , string , " \' "
+        | " \" " , string , " \" "
+name = a..z | A..Z , {a..z | A..Z | 1..6 | : | - | < } , *
+string = * (uwaga niżej)
+\end{verbatim}
+
+Postać \code{string} zależy od parsera - gdy wywoła on funcję \code{getText()} wczytywany jest on aż do znaku nowego taga HTML (\code{<}), gdy \code{getScript()} aż do taga zamykającego JavaScript \code{</script>}, natomiast w przypadku value wszystko pomiędzy cudzysłowami.
+
+\subsection{Generator kodu wyjściowego}
+Generator kodu wyjściowego korzystając z drzewa rozbioru wygenerowanego na wyjściu analizotra składniowego (\code{HtmlDocument}), produkuje kod HTML oczyszczony z atrybutów, styli, skryptów, komentarzy, doctype'a zgodnie z zadaną konfiguracja wprowadzoną przy uruchamianiu przez użytkownika.
+Do pliku wyjściowego wysyłane są strumieniową kolejne elementy struktury \code{HtmlDocument} tylko wtedy jeśli użytkownik nie podał opcji ich oczyszczenia.
+
+\section{Wykorzystywane struktury}
+Aplikacja wykorzystuje do działania nastepujące struktury:
+\subsection{Token}
+Informacje o typie tokenu, jego pozycji i wartości:
+\begin{lstlisting}
+enum TokenType {
+    OpenDoctype,
+    Open,
+    OpenEnd,
+    Close,
+    Name,
+    Equals,
+    Value,
+    Text,
+    CloseEmpty,
+    Comment,
+    EndOfFile,
+    Empty,
+    Undefined
+};
+\end{lstlisting}
+\begin{lstlisting}
+class Token {
+public:
+    Token(TokenType type = Empty, std::string value = "", Position position = Position(0, 0, 0));
+    Token(TokenType type, std::string value, Position position, char quoteType);
+    TokenType getType();
+    std::string getValue();
+    Position getPosition();
+};
+\end{lstlisting}
+
+\subsection{Node}
+Informacja o sparsowanym elemencie HTML - jego typ, atrybuty, dzieci i poziom zagnieżdżenia:
+\begin{lstlisting}
+enum NodeType {
+    SingleTagNode,
+    DoubleTagNode,
+    InlineTagNode,
+    TextNode,
+    CommentNode
+};
+\end{lstlisting}
+\begin{lstlisting}
+class Node {
+public:
+    Node(const std::string &name, NodeType type, const std::vector<Node *> &children,
+         const std::vector<Attribute> &attributes, int level);
+
+    std::string getName();
+    NodeType getType();
+    std::vector<Node*> getChildren();
+    std::vector<Attribute> getAttributes();
+    int getLevel();
+};
+\end{lstlisting}
+
+\subsection{Konfiguracja}
+Wczytane przy uruchomieniu programu opcje wykonania programu, w tym plik wejściowy, ścieżka do pliku wyjściowego i opcje oczyszczania:
+\begin{lstlisting}
+enum CleanerOption {
+    ATTRIBUTES_OPTION,
+    STYLES_OPTION,
+    SCRIPTS_OPTION,
+    DOCTYPE_OPTION,
+    COMMENTS_OPTION
+};
+\end{lstlisting}
+\begin{lstlisting}
+class Configuration {
+public:
+    void addCleaningOption(CleanerOption cleanerOption);
+    void setInputFile(const std::string &inputFile);
+    void setOutputFile(const std::string &outputFile);
+    std::set<CleanerOption> getOptions();
+    std::string& getInputFilePath();
+    std::string& getOutputFilePath();
+};
+\end{lstlisting}
+
+\section{Sposób uruchomienia}
+Program uruchamiany jest z linii komend z podaniem pliku wejściowego, opcjonalnie wyjściowego oraz opcjonalnymi opcjami: \code{html\_cleaner [OPTIONS] input\_file [output\_file]}
+Jeśli plik wyjściowy nie zostanie podany wygenerowany zostanie plik o nazwie takiej jak input file bez rozszerzenia z dodaną końcówką: \code{.out.html}
+
+Dostępne opcje definiują które elementy mają zostać usunięcie w wygenerowanym pliku wynikowym:
+\begin{itemize}
+\item \code{--attributes} lub \code{-a} - usuwanie atrybutów
+\item \code{--styles} lub \code{-s} - usuwanie styli CSS
+\item \code{--scripts} lub \code{-S} - usuwanie skryptów JS
+\item \code{--doctype} lub \code{-d} - usuwanie doctype'a
+\item \code{--comments} lub \code{-c} - usuwanie komentarzy\\
+
+\item \code{--help} lub \code{-h} - wyświetla informację o tym, jak uruchomić program
+\end{itemize}
+
+W celu wczytania argumentów wejściowych uruchomienia programu użyta została biblioteka \code{boost}
+
+\section{Wykonane testy}
+W celu sprawdzenia poprawności działania algorytmu wykonanych zostało kilka testów. Efekt jednego z nich znajduje się poniżej.
+Ponadto oczyszczaniu poddane zostały popularne strony serwisów informacyjnych: \textbf{www.onet.pl} oraz \textbf{www.interia.pl}. Dla obydwu stron program wyprodukował poprawny plik wynikowy bez błędów parsowania.\\
+
+\textbf{Użyte opcje: -asS}\\
+
+\textbf{Plik wejściowy:}
+\begin{Verbatim}[fontsize=\small]
+<!DOCTYPE>
+<!--root comment also work-->
+<html>
+  <head>
+    <!--comment test-->
+    <script>
+      var x = 0;
+      for (var i = 0; i < x; i++) {
+          alert('Nothin');
+      }
+    </script>
+    <style>
+      p {
+        color: black;
+      }
+    </style>
+    <meta charset="UTF-8">
+    <title>Sample "Hello, World" Application</title>
+  </head>
+  <body bgcolor="white">
+    <table border="0" cellpadding="10">
+      <tr class="classTest" id='idTest'>
+        <td>
+          <img src="images/springsource.png" />
+        </td>
+        <td>
+          <h1>Sample "Hello, World" Application</h1>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <p>This is the home page for the HelloWorld Web application.</p>
+    <p>To prove that they work, you can execute either of the following links:</p>
+    <ul>
+      <li>To a <a href="hello.jsp">JSP page</a>.</li>
+      <li>To a <a href="hello">servlet</a>.</li>
+    </ul>
+  </body>
+</html>
+\end{Verbatim}
+
+\pagebreak
+\textbf{Plik wynikowy:}
+\begin{Verbatim}[fontsize=\small]
+<!DOCTYPE>
+<!--root comment also work-->
+<html>
+  <head>
+    <!--comment test-->
+    <meta>
+    <title>
+      Sample "Hello, World" Application
+    </title>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <td>
+          <img/>
+        </td>
+        <td>
+          <h1>
+            Sample "Hello, World" Application
+          </h1>
+        </td>
+      </tr>
+    </table>
+    <br>
+    <p>
+      This is the home page for the HelloWorld Web application.
+    </p>
+    <p>
+      To prove that they work, you can execute either of the following links:
+    </p>
+    <ul>
+      <li>
+        To a 
+        <a>
+          JSP page
+        </a>
+        .
+      </li>
+      <li>
+        To a 
+        <a>
+          servlet
+        </a>
+        .
+      </li>
+    </ul>
+  </body>
+</html>
+
+\end{Verbatim}
+
+\pagebreak
+
+\textbf{Struktura zagnieżdżeń dla pliku wejściowego (bez żadnych opcji)}
+\begin{Verbatim}[fontsize=\small]
+DOM structure: 
+html -> head -> script
+html -> head -> style
+html -> head -> meta
+html -> head -> title
+html -> body -> table -> tr -> td -> img
+html -> body -> table -> tr -> td -> h1
+html -> body -> br
+html -> body -> p
+html -> body -> p
+html -> body -> ul -> li -> a
+html -> body -> ul -> li -> a
+\end{Verbatim}
+
+\section{Efekt oczyszczania serwisu Interia}
+\textbf{Użyte opcje: -saSc}\\\\\\\\\\
+\begin{figure}[h]
+\includegraphics[scale=0.25]{interia_before}
+\caption{Przed oczyszczaniem}
+\end{figure}
+
+\pagebreak
+
+\begin{figure}[h]
+\includegraphics[scale=0.25]{interia_after}
+\caption{Po oczyszczaniu z opcjami -saSc}
+\end{figure}
+
+\section{Podsumowanie}
+Główną trudność projektu stanowi poprawna implementacja parsera. Pomimo, że ten zaimplementowany w dołączonym kodzie źródłowym z pewnością daleko odbiega od tych, które wykorzystują nasze przeglądarki internetowe, można traktować go jako przybliżenie działania używanego w przeglądarkach parsera HTML. O jego dużej skuteczności świadczą wykonane testy na realnych istniejących w sieci stronach WWW takich jak Interia i Onet, gdzie bogactwo różnych elementów HTML jest stosunkowo duże.
+
+\end{document}

@@ -28,6 +28,8 @@ void HtmlGenerator::generate() {
     output.close();
 
     printStructure(htmlDocument);
+
+//    delete &htmlDocument;
 }
 
 

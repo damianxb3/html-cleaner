@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)https://s0.2mdn.net/4309142/1494855767961/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+<!-- 1) Change title name -->
+<title>2017_04_KugaC520MCA_LaunchFLEET_MSilverNonFleet_Central_BE_950x300_Interia_pl_PL</title>
+    
+<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+<!--<script src="https://s0.2mdn.net/ads/studio/Enabler.js"></script>-->
+<script src="./createjs_2015.11.26_54e1c3722102182bb133912ad4442e19_min.js"></script>
+    
+<script>
+    var clickTag = "";
+
+    // DoubleClick  -> var dcSelect = true;
+    // Standalone   -> var dcSelect = false;
+    var dcSelect = false;
+
+    // Enable DoubleClick Polite Load  -> var politeLoad = true;
+    // Disable DoubleClick Polite Load -> var politeLoad = false;
+    // For Standalone should be always -> var politeLoad = false;
+    var politeLoad = false;
+
+    function initLib() {
+        // 2) Change name of the library
+        
+        // The same as name of the project file. If it strats with number you should add underscore in the beginning.
+        // exportRoot = new lib.CCL_RangeSTLine_Central_D5_160x600_en_EU(); 
+        // exportRoot = new lib._2016_10_CCL_MondeoSTLine_Central_DBE_320x160_Connect_sv_SE();
+        
+        exportRoot = new lib._2017_04_KugaC520MCA_LaunchFLEET_MSilverNonFleet_Central_BE_950x300_Interia_pl_PL();   
+    }
+    
+    // 3) Set correct banner size in pixels
+    
+    var bannerWidth = 950;
+    var bannerHeight = 300;
+    
+    // Enable Terms and Conditions Overlay  -> var enableTerms = true; 
+    // Disable Terms and Conditions Overlay -> var enableTerms = false;
+    var enableTerms = true;
+    
+    
+    
+    // Enable cta pause in the end  -> var enableCtaPause = true;
+    // Disable cta pause in the end -> var enableCtaPause = false;
+    var enableCtaPause = false;
+    
+    // Set cta pause time in milisecond
+    var ctaPauseAfter = 30000;
+
+</script>
+    
+<style>
+    
+/*  Set terms button position. You can enable visibility by changing opacity to 0.5.     */
+    
+    #terms_btn {
+        position: absolute; top: 240px; left: 5px;
+        width: 125px; height: 20px; opacity: 0;
+    }
+    
+    
+/*  Set the color of the border */
+    
+    #border {
+        border: 1px solid #cccccc;
+    }
+</style>
+
+    
+    
+    
+    
+<!-- ============================== Do not edit ============================== -->
+    
+<script>
+    function loadScript(){var e=document.createElement("script");e.setAttribute("type","text/javascript"),e.setAttribute("src","script.js"),document.getElementsByTagName("head")[0].appendChild(e),e.onload=function(){init()}}function stLoad(){console.log("ready-Standalone"),loadScript()}function dcLoad(){Enabler.isInitialized()?enablerInitHandler():Enabler.addEventListener(studio.events.StudioEvent.INIT,enablerInitHandler)}function enablerInitHandler(){console.log("ready-DoubleClick"),politeLoad?Enabler.isPageLoaded()?pageLoadedHandler():Enabler.addEventListener(studio.events.StudioEvent.PAGE_LOADED,pageLoadedHandler):loadScript()}function pageLoadedHandler(){console.log("ready-polite"),loadScript()}function init(){createjs.MotionGuidePlugin.install(),canvas=document.getElementById("canvas"),images=images||{};var e=new createjs.LoadQueue(!1);e.addEventListener("fileload",handleFileLoad),e.addEventListener("complete",handleComplete),e.loadManifest(lib.properties.manifest)}function handleFileLoad(e){"image"==e.item.type&&(images[e.item.id]=e.result)}function handleComplete(e){if(ctaPause(),initLib(),stage=new createjs.Stage(canvas),stage.addChild(exportRoot),stage.update(),createjs.Ticker.setFPS(lib.properties.fps),createjs.Ticker.addEventListener("tick",stage),window.getDevicePixelRatio()){var t=canvas.getAttribute("height"),n=canvas.getAttribute("width"),a=window.getDevicePixelRatio();canvas.setAttribute("width",Math.round(n*a)),canvas.setAttribute("height",Math.round(t*a)),canvas.style.width=n+"px",canvas.style.height=t+"px",stage.scaleX=stage.scaleY=a,console.log("device ratio: "+a)}}function clicktag_Click(e){dcSelect?(Enabler.exit("Exit Click"),Enabler.counter("Counter Click")):window.open(window.clickTag)}function mouseEnter(){termsBtnOver||pauseCta||exportRoot.cta.gotoAndPlay("fadein")}function mouseLeave(){termsBtnOver=!1,exportRoot.cta.gotoAndPlay("fadeout")}function termsEnter(){termsBtnOver=!0,termsEnable&&enableTerms&&(exportRoot.stop(),exportRoot.terms_overlay.gotoAndPlay(1))}function termsLeave(){termsEnable&&enableTerms&&(loopCount!=loopNumber||termsResume?(exportRoot.play(),exportRoot.terms_overlay.gotoAndPlay(9)):(exportRoot.stop(),exportRoot.terms_overlay.gotoAndPlay(9)))}function resizeContent(){var e="width="+bannerWidth+",height="+bannerHeight,t=document.createElement("meta");t.setAttribute("name","ad.size"),t.setAttribute("content",e),document.getElementsByTagName("head")[0].appendChild(t);var n=document.getElementById("canvas");n.setAttribute("width",bannerWidth),n.setAttribute("height",bannerHeight);var a=document.getElementById("clicktag");a.style.width=bannerWidth+"px",a.style.height=bannerHeight+"px";var o=document.getElementById("border");o.style.width=bannerWidth-2+"px",o.style.height=bannerHeight-2+"px"}function ctaPause(){enableCtaPause&&setTimeout(function(){pauseCta=!0},ctaPauseAfter)}window.onload=function(){resizeContent(),dcSelect?dcLoad():stLoad()},window.getDevicePixelRatio=function(){var e=1;return void 0!==window.screen.systemXDPI&&void 0!==window.screen.logicalXDPI&&window.screen.systemXDPI>window.screen.logicalXDPI?e=window.screen.systemXDPI/window.screen.logicalXDPI:void 0!==window.devicePixelRatio&&(e=window.devicePixelRatio),e};var canvas,stage,exportRoot,termsBtnOver=!1,pauseCta=!1;
+</script>
+    
+<style>body{margin:0;padding:0;background-color:transparent}#border,#clicktag{position:absolute;top:0;left:0}#terms_btn{background-color:#0ff;cursor:pointer}</style>
+
+<script type="text/javascript">
+    
+      (function() {
+        var relegateNavigation = '';
+        var handleClickTagMessage = function(e) {
+          try {
+            var eventData = JSON.parse(e.data);
+          } catch (err) {
+            return;
+          }
+          if (eventData.isInitClickTag) {
+            if (eventData.clickTags) {
+              for (var i = 0; i < eventData.clickTags.length; i++) {
+                var clkTag = eventData.clickTags[i];
+                window[clkTag.name] = clkTag.url;
+              }
+            } else if (eventData.clickTag) {
+              window.clickTag = eventData.clickTag;
+            }
+            relegateNavigation = eventData.relegateNavigation;
+          }
+        };
+
+        if (open.call) {
+          window.open = function(open) {
+            return function(url, name, features) {
+              if (relegateNavigation === 'parent') {
+                var message = {'clickTag': url, 'isPostClickTag': true};
+                parent.postMessage(JSON.stringify(message), '*');
+              } else {
+                var args = [url, name];
+                if (features) {
+                  args.push(features);
+                }
+                open.apply(window, args);
+              }
+            };
+          }(window.open);
+        }
+
+        if (window.addEventListener) {
+          window.addEventListener(
+              'message', handleClickTagMessage, false);
+        } else {
+          window.attachEvent('onmessage', handleClickTagMessage);
+        }
+      })();
+    
+  </script><meta name="ad.size" content="width=950,height=300"><script type="text/javascript" src="./script.js"></script></head>
+    
+<body>
+	<canvas id="canvas" style="background-color: rgb(255, 255, 255); width: 950px; height: 300px;" width="1045" height="330"></canvas>
+    
+    <div id="border" style="width: 948px; height: 298px;"></div>
+    
+    <a href="javascript: void(0);" onclick="javascript: clicktag_Click();">
+        <div id="clicktag" onmouseenter="mouseEnter()" onmouseleave="mouseLeave()" style="width: 950px; height: 300px;"></div>
+    </a>
+    
+    <div id="terms_btn" onmouseenter="termsEnter()" onmouseleave="termsLeave()" onclick="javascript: clicktag_Click();"></div>
+
+    
+</body></html>

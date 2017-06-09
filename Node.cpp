@@ -27,3 +27,11 @@ std::vector<Attribute> Node::getAttributes() {
 int Node::getLevel() {
     return level;
 }
+
+Node::~Node() {
+    for (auto child : children) {
+        if (child != nullptr) {
+            delete child;
+        }
+    }
+}

@@ -23,7 +23,7 @@ private:
 public:
     Node(const std::string &name, NodeType type, const std::vector<Node *> &children,
          const std::vector<Attribute> &attributes, int level);
-
+    ~Node();
     std::string getName();
     NodeType getType();
     std::vector<Node*> getChildren();

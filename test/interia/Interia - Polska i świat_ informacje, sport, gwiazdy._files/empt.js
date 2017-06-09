@@ -1,0 +1,1 @@
+!function(){"undefined"!=typeof window.inpl_adb_detector_jsonp_bait&&window.inpl_adb_detector_jsonp_bait()}();

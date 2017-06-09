@@ -11,6 +11,7 @@ private:
 
 public:
     HtmlDocument(Node *doctype, const std::vector<Node *> &rootComments, Node *rootNode);
+    ~HtmlDocument();
     Node *getDoctype() const;
     const std::vector<Node *> &getRootComments() const;
     Node *getRootNode() const;
